@@ -1,14 +1,23 @@
 "use client";
 
+//react
+import { useEffect, useState } from 'react';
+
+//next.js
+import Link from 'next/link';
+
+//components
 import { CalculateLoan } from '@/components/CalculateLoanForm';
 import { PriceForm } from '@/components/PriceForm';
-import { Thanks } from '@/components/Thanks';
 import { Button } from '@/components/Button';
-import { useEffect, useState } from 'react';
+
+//hooks
 import { useForm } from '@/hooks/useForm';
+
+//AOS 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import Link from 'next/link';
+
 
 interface UseFormProps {
   steps: JSX.Element[];
@@ -16,8 +25,8 @@ interface UseFormProps {
 
 const paymentMethods = [
   { name: 'Selecionar forma de pagamento' },
-  { name: 'Diário 24x (Segunda a Sexta)' },
-  { name: 'Diário 20x (Segunda a Sábado)' },
+  { name: 'Diário 24x (Segunda a Sábado)' },
+  { name: 'Diário 20x (Segunda a Sexta)' },
   { name: 'Semanal 4x' },
   { name: 'Quinzenal 2x' },
   { name: 'Mensal 1x' },
@@ -40,20 +49,14 @@ export default function Home() {
   function handleCalculateLoan() {
     let total = parseFloat(value);
 
-    total.toLocaleString('pt-BR', {
-      style: "currency",
-      currency: 'BRL',
-      minimumFractionDigits: 2,
-    });
-
     switch (selected.name) {
-      case 'Diário 24x (Segunda a Sexta)':
+      case 'Diário 24x (Segunda a Sábado)':
         total *= 1.2;
         total /= 24;
         setResult(`Você pagará 24 parcelas de ${currencyBRL(total)}`)
         setMethod(`Diário 24x de de ${currencyBRL(total)}`);
         break;
-      case 'Diário 20x (Segunda a Sábado)':
+      case 'Diário 20x (Segunda a Sexta)':
         total *= 1.2;
         total /= 20;
         setResult(`Você pagará 20 parcelas de ${currencyBRL(total)}`);
@@ -78,7 +81,7 @@ export default function Home() {
         setMethod(`Mensal 1x de ${currencyBRL(total)}`);
         break;
       default:
-        setResult("")
+        setResult("");
         break;
     }
   }
@@ -95,7 +98,6 @@ export default function Home() {
       result={result}
       handleCalculateLoan={handleCalculateLoan}
     />,
-    <Thanks />
   ];
 
   const formProps: UseFormProps = {
@@ -130,8 +132,7 @@ export default function Home() {
             data-aos="zoom-in"
             className='text-zinc-950 text-lg font-semibold self-start'
           >
-            De quanto está precisanto? <br />
-            Podemos te ajudar
+            De quanto está precisanto?
           </p>
         )}
         {isSecondStep && (
@@ -140,7 +141,7 @@ export default function Home() {
             className='text-zinc-950 text-lg font-semibold self-start'
           >
             Valor do empréstimo: {currencyBRL(Number(value))} <br />
-            Quase lá!
+            Estamos quase lá!
           </p>
         )}
         <form

@@ -1,13 +1,12 @@
-import { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { Fragment } from 'react';
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 interface SelectProps {
   selected: any;
   setSelected: any;
   paymentMethods: any;
 }
-
 
 export function Select({
   selected,
