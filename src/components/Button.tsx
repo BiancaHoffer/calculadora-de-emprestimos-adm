@@ -18,7 +18,7 @@ export function Button({
     <button className={`
     ${variant == "blue" && "bg-primary"}
     ${variant == "gray" && "bg-zinc-400"}
-    w-full max-w-[320px] rounded-md shadow-lg transition-all p-3 text-white font-medium hover:opacity-90 disabled:cursor-not-allowed  disabled:bg-[#69af6e74]
+    w-full max-w-[320px] rounded-md shadow-lg transition-all p-3 text-white font-medium hover:opacity-90 disabled:cursor-not-allowed  disabled:bg-[#3e8fd168]
     `}
       {...props}
     >

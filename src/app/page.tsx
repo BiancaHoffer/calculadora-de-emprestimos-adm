@@ -33,7 +33,7 @@ const paymentMethods = [
 ]
 
 export default function Home() {
-  const [value, setValue] = useState("2500");
+  const [value, setValue] = useState("500");
   const [selected, setSelected] = useState(paymentMethods[0]);
   const [result, setResult] = useState("");
   const [method, setMethod] = useState("");
@@ -51,31 +51,31 @@ export default function Home() {
 
     switch (selected.name) {
       case 'Diário 24x (Segunda a Sábado)':
-        total *= 1.2;
+        total *= 1.3;
         total /= 24;
         setResult(`Você pagará 24 parcelas de ${currencyBRL(total)}`)
         setMethod(`Diário 24x de de ${currencyBRL(total)}`);
         break;
       case 'Diário 20x (Segunda a Sexta)':
-        total *= 1.2;
+        total *= 1.3;
         total /= 20;
         setResult(`Você pagará 20 parcelas de ${currencyBRL(total)}`);
         setMethod(`Diário 20x de de ${currencyBRL(total)}`);
         break;
       case 'Semanal 4x':
-        total *= 1.2;
+        total *= 1.3;
         total /= 4;
         setResult(`Você pagará 4 parcelas de ${currencyBRL(total)}`);
         setMethod(`Semanal 4x de ${currencyBRL(total)}`);
         break;
       case 'Quinzenal 2x':
-        total *= 1.2;
+        total *= 1.3;
         total /= 2;
         setResult(`Você pagará 2 parcelas de ${currencyBRL(total)}`);
         setMethod(`Quinzenal 2x de ${currencyBRL(total)}`);
         break;
       case 'Mensal 1x':
-        total *= 1.2;
+        total *= 1.3;
         total /= 1;
         setResult(`Você pagará 1 parcela de ${currencyBRL(total)}`);
         setMethod(`Mensal 1x de ${currencyBRL(total)}`);

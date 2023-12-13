@@ -36,7 +36,7 @@ export function Select({
               <Listbox.Option
                 key={index}
                 className={({ active }) =>
-                  `relative cursor-pointer z-50 select-none py-2 pl-10 pr-4 ${active ? 'bg-[#defbdc] text-primary' : 'text-gray-900'
+                  `relative cursor-pointer z-50 select-none py-2 pl-10 pr-4 ${active ? 'bg-[#5ea9e637] text-primary' : 'text-gray-900'
                   }`
                 }
                 value={method}

@@ -23,9 +23,9 @@ export function PriceForm({ value, setValue }: PriceForm) {
       <input
         className='w-full bg-primary'
         type="range"
-        min="1000"
-        max="5000"
-        step="100"
+        min="100"
+        max="1000"
+        step="50"
         value={value}
         id="slider"
         onChange={e => setValue(e.target.value)}
