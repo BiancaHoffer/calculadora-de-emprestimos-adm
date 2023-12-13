@@ -132,7 +132,7 @@ export default function Home() {
             data-aos="zoom-in"
             className='text-zinc-950 text-lg font-semibold self-start'
           >
-            De quanto está precisanto?
+            De quanto está precisando?
           </p>
         )}
         {isSecondStep && (
