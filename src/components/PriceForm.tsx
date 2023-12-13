@@ -11,25 +11,21 @@ export function PriceForm({ value, setValue }: PriceForm) {
   }
 
   return (
-    <div data-aos="zoom-in" className="w-full max-w-[320px]">
-      <div className='flex items-end justify-between gap-1'>
-        <span className='text-primary text-5xl font-semibold pb-5'>
+    <div data-aos="zoom-in" className="flex flex-col gap-3">
+      <div className='w-full flex items-end justify-between gap-1'>
+        <span className='text-primary text-5xl font-semibold pb-3'>
           R$
         </span>
-        <input
-          className='text-primary text-8xl p-0 m-0 w-full font-medium '
-          type="text"
-          placeholder={value}
-          value={`${value}`}
-          onChange={e => setValue(RegexNumber(e.target.value))}
-        />
+        <p className='text-primary text-8xl p-0 m-0 w-full font-medium '>
+          {value}
+        </p>
       </div>
       <input
-        className='w-full bg-primary '
+        className='w-full bg-primary'
         type="range"
-        min="100"
-        max="1000"
-        step="50"
+        min="1000"
+        max="5000"
+        step="100"
         value={value}
         id="slider"
         onChange={e => setValue(e.target.value)}

@@ -1,7 +1,7 @@
 "use client";
 
 //react
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 //next.js
 import Link from 'next/link';
@@ -33,7 +33,7 @@ const paymentMethods = [
 ]
 
 export default function Home() {
-  const [value, setValue] = useState("500");
+  const [value, setValue] = useState("2500");
   const [selected, setSelected] = useState(paymentMethods[0]);
   const [result, setResult] = useState("");
   const [method, setMethod] = useState("");
@@ -84,6 +84,11 @@ export default function Home() {
         setResult("");
         break;
     }
+  };
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    changeStep(currentStep + 1, event);
   }
 
   const formComponents = [
@@ -132,7 +137,7 @@ export default function Home() {
             data-aos="zoom-in"
             className='text-zinc-950 text-lg font-semibold self-start'
           >
-            De quanto está precisanto?
+            De quanto está precisando?
           </p>
         )}
         {isSecondStep && (
@@ -145,11 +150,11 @@ export default function Home() {
           </p>
         )}
         <form
-          onSubmit={(event) => changeStep(currentStep + 1, event)}
+          onSubmit={handleSubmit}
           className='flex justify-between items-center flex-col gap-6 w-full h-full'
         >
           <div></div>
-          <div>{currentComponent}</div>
+          <div className='w-full max-w-[320px]'>{currentComponent}</div>
           <div className='w-full flex items-center justify-center flex-col gap-2'>
             {isSecondStep || isLastStep && (
               <Button
@@ -173,7 +178,7 @@ export default function Home() {
                 <Link
                   className="w-full"
                   target="_blank"
-                  href={`https://api.whatsapp.com/send/?phone=5548991149389&text=Tenho interesse em um empréstimo de ${currencyBRL(Number(value))}. Forma de pagamento: ${method}`}
+                  href={`https://api.whatsapp.com/send/?phone=559282007007&text=Tenho interesse em um empréstimo de ${currencyBRL(Number(value))}. Forma de pagamento: ${method}`}
                 >
                   <Button
                     type="button"

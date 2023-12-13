@@ -22,7 +22,7 @@ export function CalculateLoan({
       data-aos="zoom-in"
       className=" w-full h-full"
     >
-      <div className="flex flex-col gap-1 w-[320px] mb-2">
+      <div className="flex flex-col gap-1 w-full mb-2">
         <label className="text-zinc-400 text-[12px]">
           * Escolha uma forma de pagamento para continuar
         </label>
