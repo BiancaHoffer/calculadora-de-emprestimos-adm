@@ -57,7 +57,7 @@ export function CalculateLoan({
             type="date"
             disabled={false}
             value={selectedDate}
-            placeholder={selectedDate}
+            placeholder="dd/mm/aaaa"
             onChange={handleDateChange}
             min={currentDate}
             className="w-full cursor-pointer rounded-lg bg-zinc-50 p-3 text-left shadow-md focus:outline-none border-[0px] border-transparent active:shadow-xl focus:shadow-xl focus-visible:border-transparent focus-visible:ring-white  sm:text-sm"
