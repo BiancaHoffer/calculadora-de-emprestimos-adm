@@ -5,11 +5,9 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 interface SelectProps {
-  selected: boolean;
+  selected: any;
   setSelected: Dispatch<SetStateAction<boolean>>;
-  paymentMethods: {
-    name: string;
-  }[];
+  paymentMethods: any;
 }
 
 export function Select({
