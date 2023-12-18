@@ -5,10 +5,10 @@ interface CalenderProps extends ComponentProps<'input'> {
   value: any;
 }
 
-export function Calender({ value }: CalenderProps) {
+export function Calender({ value, ...props }: CalenderProps) {
   return (
     <div className="relative w-[100%]">
-      <input type="date" id="input-date" value={value} />
+      <input type="date" id="input-date" value={value} {...props} />
       <button className="p-3 bg-zinc-50 rounded-lg shadow-md text-sm focus-within:shadow-lg cursor-pointer w-full">
         <p className="text-start">
           {dateFormat(value)}

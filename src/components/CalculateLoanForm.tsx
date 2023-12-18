@@ -60,17 +60,7 @@ export function CalculateLoan({
           <label className="text-zinc-400 text-[12px]">
             * Selecione a data de início para o pagamento do empréstimo
           </label>
-          <input
-            type="date"
-            disabled={false}
-            value={selectedDate}
-            placeholder="dd/mm/aaaa"
-            onChange={handleDateChange}
-            min={currentDate}
-            className="w-full cursor-pointer rounded-lg bg-zinc-50 p-3 text-left shadow-md focus:outline-none border-[0px] border-transparent active:shadow-xl focus:shadow-xl focus-visible:border-transparent focus-visible:ring-white  sm:text-sm"
-          />
-
-          <Calender value={selectedDate} />
+          <Calender value={selectedDate} onChange={handleDateChange} placeholder="dd/mm/aaaa" />
         </fieldset >
         <fieldset className="flex flex-col gap-1 w-full mb-6">
           <label className="text-zinc-400 text-[12px]">
