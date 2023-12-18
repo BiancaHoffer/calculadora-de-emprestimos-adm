@@ -181,9 +181,9 @@ export default function Home() {
 
   // input date
   function handleDateChange(event: any) {
-    const selected = new Date(event.target.value);
+    setSelectedDate(event.target.value);
 
-    if (selectedPayment.name === "Diário 24x (Segunda a Sábado)") {
+    /*if (selectedPayment.name === "Diário 24x (Segunda a Sábado)") {
       if (selected.getDay() === 0) {
         alert(`Não é possível selecionar os domingos nesta forma de pagamento: ${selectedPayment.name}`)
         setSelectedDate("");
@@ -198,7 +198,7 @@ export default function Home() {
       } else {
         setSelectedDate(event.target.value);
       }
-    }
+    }*/
   };
 
   // copy cronograma
