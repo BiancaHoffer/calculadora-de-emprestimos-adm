@@ -115,3 +115,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   top: 0;
   width: auto;
 }
+
+#input-date {
+  all: unset;
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  color: transparent;
+}

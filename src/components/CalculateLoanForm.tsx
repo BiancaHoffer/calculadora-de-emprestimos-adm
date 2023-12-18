@@ -2,6 +2,13 @@ import { Dispatch, SetStateAction } from "react";
 import { Modal } from "./Modal";
 import { Select } from "./Select";
 
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+
+import { useState } from 'react';
+import { Calender } from "./Calender";
+
 interface CalculateLoanProps {
   selectedPayment: any;
   setSelectedPayment: any;
@@ -62,6 +69,8 @@ export function CalculateLoan({
             min={currentDate}
             className="w-full cursor-pointer rounded-lg bg-zinc-50 p-3 text-left shadow-md focus:outline-none border-[0px] border-transparent active:shadow-xl focus:shadow-xl focus-visible:border-transparent focus-visible:ring-white  sm:text-sm"
           />
+
+          <Calender value={selectedDate} />
         </fieldset >
         <fieldset className="flex flex-col gap-1 w-full mb-6">
           <label className="text-zinc-400 text-[12px]">
