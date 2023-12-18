@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/utils/formatCurrency";
+
 interface PriceForm {
   value: string;
   setValue: any;
@@ -10,8 +12,8 @@ export function PriceForm({ value, setValue }: PriceForm) {
         <span className='text-primary text-4xl font-semibold pb-6'>
           R$
         </span>
-        <p className='text-primary text-[88px] p-0 m-0 w-full font-medium '>
-          {value}
+        <p className='text-primary text-[82px] p-0 m-0 w-full font-medium '>
+          {formatCurrency(Number(value))}
         </p>
       </div>
       <input
