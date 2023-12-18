@@ -4,19 +4,13 @@ interface PriceForm {
 }
 
 export function PriceForm({ value, setValue }: PriceForm) {
-  function RegexNumber(value: string) {
-    return value
-      .replace(/\D/g, "")
-      .replace(/[.,]/g, "")
-  }
-
   return (
     <div data-aos="zoom-in" className="flex flex-col gap-3">
-      <div className='w-full flex items-end justify-between gap-1'>
-        <span className='text-primary text-5xl font-semibold pb-3'>
+      <div className='w-full flex items-end mb-[-20px]'>
+        <span className='text-primary text-4xl font-semibold pb-6'>
           R$
         </span>
-        <p className='text-primary text-8xl p-0 m-0 w-full font-medium '>
+        <p className='text-primary text-[88px] p-0 m-0 w-full font-medium '>
           {value}
         </p>
       </div>
@@ -24,8 +18,8 @@ export function PriceForm({ value, setValue }: PriceForm) {
         className='w-full bg-primary'
         type="range"
         min="100"
-        max="1000"
-        step="50"
+        max="10000"
+        step="100"
         value={value}
         id="slider"
         onChange={e => setValue(e.target.value)}

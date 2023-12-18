@@ -3,9 +3,6 @@
 //react
 import { FormEvent, useEffect, useState } from 'react';
 
-//next.js
-import Link from 'next/link';
-
 //components
 import { CalculateLoan } from '@/components/CalculateLoanForm';
 import { PriceForm } from '@/components/PriceForm';
@@ -17,6 +14,7 @@ import { useForm } from '@/hooks/useForm';
 //AOS 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { toast } from 'react-toastify';
 
 
 interface UseFormProps {
@@ -32,11 +30,25 @@ const paymentMethods = [
   { name: 'Mensal 1x' },
 ]
 
+const interestPercentage = [
+  { name: 'Selecionar porcentagem' },
+  { name: '20%' },
+  { name: '30%' },
+]
+
 export default function Home() {
-  const [value, setValue] = useState("500");
-  const [selected, setSelected] = useState(paymentMethods[0]);
-  const [result, setResult] = useState("");
-  const [method, setMethod] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [value, setValue] = useState("5000");
+
+  const [selectedPayment, setSelectedPayment] = useState(paymentMethods[0]);
+  const [selectedPercentage, setSelectedPercentage] = useState(interestPercentage[0]);
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const [resultOption1, setResultOption1] = useState<string[]>([]);
+  const [resultOption2, setResultOption2] = useState("");
+
+  const [copyCheck, setCopyCheck] = useState(false);
+  const [copyCheck2, setCopyCheck2] = useState(false);
 
   function currencyBRL(value: number) {
     return value.toLocaleString('pt-BR', {
@@ -46,46 +58,185 @@ export default function Home() {
     });
   }
 
+  function generatePaymentSchedule(
+    total: number,
+    numberOfInstallments: number,
+    startDate: string
+  ) {
+    const paymentSchedule = [];
+    let currentDate = new Date(startDate);
+    let currentWeek = 1;
+    let separatorAdded = false;
+
+    for (let i = 1; i <= numberOfInstallments;) {
+      const dayOfWeek = currentDate.getDay();
+      let currentWeekStartDate = new Date(startDate);
+      const formattedDate = currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+
+      if (selectedPayment.name == "Diário 24x (Segunda a Sábado)" || selectedPayment.name == "Diário 20x (Segunda a Sexta)") {
+        if (!separatorAdded) {
+          paymentSchedule.push(`---- Semana ${currentWeek} ----`);
+          separatorAdded = true;
+        }
+      }
+
+      if (selectedPayment.name === "Semanal 4x") {
+        if (dayOfWeek === 1 || dayOfWeek === 0) {
+          paymentSchedule.push(`---- Semana ${currentWeek} ----`);
+          currentWeekStartDate.setDate(currentWeekStartDate.getDate() + 7);
+          currentWeek++;
+        }
+      }
+
+      if (selectedPayment.name !== "Diário 24x (Segunda a Sábado)") {
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          paymentSchedule.push(`📆 ${formattedDate} 💰${currencyBRL(total)}`);
+          i++;
+        }
+      }
+
+      if (selectedPayment.name === "Diário 24x (Segunda a Sábado)") {
+        if (dayOfWeek !== 0) {
+          paymentSchedule.push(`📆 ${formattedDate} 💰${currencyBRL(total)}`);
+          i++;
+        }
+      }
+
+      if (numberOfInstallments === 24 || numberOfInstallments === 20) {
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      if (numberOfInstallments === 4) {
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+
+      if (numberOfInstallments === 2) {
+        currentDate.setDate(currentDate.getDate() + 15);
+      }
+
+      if (numberOfInstallments === 1) {
+        let selectedDate = new Date(currentDate);
+
+        selectedDate.setMonth(selectedDate.getMonth() + 1);
+
+        let novoMes = selectedDate.getMonth() + 1;
+        let dataFormatada = novoMes < 10 ? `${selectedDate.getDate()}/0${novoMes}` : `${selectedDate.getDate()}/${novoMes}`;
+        paymentSchedule[0] = (`📆 ${dataFormatada} 💰${currencyBRL(total)}`);
+      }
+
+      if (dayOfWeek === 0 && separatorAdded) {
+        currentWeek++;
+        separatorAdded = false;
+      }
+    }
+    setResultOption1(paymentSchedule);
+
+  }
+
   function handleCalculateLoan() {
     let total = parseFloat(value);
 
-    switch (selected.name) {
+    switch (selectedPayment.name) {
       case 'Diário 24x (Segunda a Sábado)':
-        total *= 1.3;
+        selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 24;
-        setResult(`Você pagará 24 parcelas de ${currencyBRL(total)}`)
-        setMethod(`Diário 24x de de ${currencyBRL(total)}`);
+        generatePaymentSchedule(total, 24, selectedDate)
+        setResultOption2(`Diário 24x de ${currencyBRL(total)} (Pagamento de segunda a sábado)`);
         break;
       case 'Diário 20x (Segunda a Sexta)':
-        total *= 1.3;
+        selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 20;
-        setResult(`Você pagará 20 parcelas de ${currencyBRL(total)}`);
-        setMethod(`Diário 20x de de ${currencyBRL(total)}`);
+        generatePaymentSchedule(total, 20, selectedDate)
+        setResultOption2(`Diário 20x de ${currencyBRL(total)} (Pagamento de segunda a sexta)`);
         break;
       case 'Semanal 4x':
-        total *= 1.3;
+        selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 4;
-        setResult(`Você pagará 4 parcelas de ${currencyBRL(total)}`);
-        setMethod(`Semanal 4x de ${currencyBRL(total)}`);
+        generatePaymentSchedule(total, 4, selectedDate)
+        setResultOption2(`Semanal 4x de ${currencyBRL(total)}`);
         break;
       case 'Quinzenal 2x':
-        total *= 1.3;
+        selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 2;
-        setResult(`Você pagará 2 parcelas de ${currencyBRL(total)}`);
-        setMethod(`Quinzenal 2x de ${currencyBRL(total)}`);
+        generatePaymentSchedule(total, 2, selectedDate)
+        setResultOption2(`Quinzenal 2x de ${currencyBRL(total)}`);
         break;
       case 'Mensal 1x':
-        total *= 1.3;
+        selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 1;
-        setResult(`Você pagará 1 parcela de ${currencyBRL(total)}`);
-        setMethod(`Mensal 1x de ${currencyBRL(total)}`);
+        generatePaymentSchedule(total, 1, selectedDate)
+        setResultOption2(`Mensal 1x de ${currencyBRL(total)}`);
         break;
       default:
-        setResult("");
+        setResultOption1([]);
+        setResultOption2("");
         break;
     }
   };
 
+  function gerenateListPayments() {
+    setIsOpen(true);
+    handleCalculateLoan();
+  }
+
+  // input date
+  function handleDateChange(event: any) {
+    const selected = new Date(event.target.value);
+
+    if (selectedPayment.name === "Diário 24x (Segunda a Sábado)") {
+      if (selected.getDay() === 0) {
+        alert(`Não é possível selecionar os domingos nesta forma de pagamento: ${selectedPayment.name}`)
+        setSelectedDate("");
+      } else {
+        setSelectedDate(event.target.value);
+      }
+    }
+    if (selectedPayment.name !== "Diário 24x (Segunda a Sábado)") {
+      if (selected.getDay() === 0 || selected.getDay() === 6) {
+        alert(`Não é possível selecionar finais de semana nesta forma de pagamento: ${selectedPayment.name}`)
+        setSelectedDate("");
+      } else {
+        setSelectedDate(event.target.value);
+      }
+    }
+  };
+
+  // copy cronograma
+  function copyResult(option: number) {
+    if (option === 1) {
+      const resultsText = resultOption1.join('\n');
+      const textarea = document.createElement('textarea');
+      textarea.value = resultsText;
+
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      setCopyCheck(true);
+      setCopyCheck2(false);
+
+      toast.success("Cronograma completo copiado com sucesso!");
+    }
+
+    if (option === 2) {
+      const resultsText = resultOption2;
+      const textarea = document.createElement('textarea');
+      textarea.value = resultsText;
+
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      setCopyCheck2(true);
+      setCopyCheck(false);
+
+      toast.success("Cronograma resumido copiado com sucesso!");
+    }
+  }
+
+  // form step
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     changeStep(currentStep + 1, event);
@@ -97,11 +248,23 @@ export default function Home() {
       setValue={setValue}
     />,
     <CalculateLoan
-      selected={selected}
-      setSelected={setSelected}
+      selectedPayment={selectedPayment}
+      setSelectedPayment={setSelectedPayment}
+      selectedPercentage={selectedPercentage}
+      setSelectedPercentage={setSelectedPercentage}
+      selectedDate={selectedDate}
       listPaymentMthods={paymentMethods}
-      result={result}
-      handleCalculateLoan={handleCalculateLoan}
+      listPercentage={interestPercentage}
+      handleDateChange={handleDateChange}
+      resultOption1={resultOption1}
+      resultOption2={resultOption2}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      copyCheck={copyCheck}
+      setCopyCheck={setCopyCheck}
+      copyCheck2={copyCheck2}
+      setCopyCheck2={setCopyCheck2}
+      copyResult={copyResult}
     />,
   ];
 
@@ -117,27 +280,37 @@ export default function Home() {
     isSecondStep,
     isLastStep
   } = useForm(formProps);
+  // form step
 
   useEffect(() => {
     AOS.init();
   }, []);
 
   useEffect(() => {
-    setResult("");
-  }, [value, selected]);
+    setResultOption1([]);
+    setResultOption2("");
+    setCopyCheck(false);
+    setCopyCheck2(false);
+
+  }, [
+    value,
+    selectedPayment,
+    selectedPercentage,
+    selectedDate
+  ]);
 
   return (
-    <main className='bg-zinc-100 w-full h-screen flex justify-center items-center flex-col gap-8 p-4'>
-      <h1 className='text-3xl font-medium text-zinc-600'>
+    <main className='bg-zinc-100 w-full h-screen flex justify-center items-center flex-col gap-5 p-4'>
+      <h1 className='text-[26px] font-medium text-zinc-600'>
         Calculadora de Empréstimos
       </h1>
-      <div className='w-full max-w-[640px] h-full max-h-[480px] bg-white rounded-lg shadow-lg p-8 flex flex-col justify-between items-center'>
+      <div data-aos="zoom-in" className='w-full max-w-[660px] min-h-[540px] bg-white rounded-lg shadow-lg p-8 flex flex-col justify-between items-center'>
         {isFirstStep && (
           <p
             data-aos="zoom-in"
             className='text-zinc-950 text-lg font-semibold self-start'
           >
-            De quanto está precisando?
+            Informe o valor do empréstimo
           </p>
         )}
         {isSecondStep && (
@@ -146,7 +319,6 @@ export default function Home() {
             className='text-zinc-950 text-lg font-semibold self-start'
           >
             Valor do empréstimo: {currencyBRL(Number(value))} <br />
-            Estamos quase lá!
           </p>
         )}
         <form
@@ -168,32 +340,29 @@ export default function Home() {
               <Button type="submit" title="Continuar" />
             )}
             {isSecondStep && (
-              <div className='flex w-full max-w-[300px] gap-2'>
+              <div className='flex flex-col w-full max-w-[320px] gap-2'>
+                <div className="flex flex-col gap-1 items-center">
+                  <Button
+                    title="Gerar cronograma de pagamentos"
+                    type="button"
+                    disabled={selectedPayment.name == "Selecionar forma de pagamento"
+                      || selectedPercentage.name == "Selecionar porcentagem"
+                      || selectedDate == ""
+                      ? true : false}
+                    onClick={gerenateListPayments}
+                  />
+                  <label className="text-zinc-400 text-[12px]">
+                    * Conferir cronograma de pagamentos do empréstimo
+                  </label>
+                </div>
                 <Button
                   type="button"
                   title="Voltar"
                   variant="gray"
                   onClick={() => changeStep(currentStep - 1)}
                 />
-                <Link
-                  className="w-full"
-                  target="_blank"
-                  href={`https://api.whatsapp.com/send/?phone=559282007007&text=Tenho interesse em um empréstimo de ${currencyBRL(Number(value))}. Forma de pagamento: ${method}`}
-                >
-                  <Button
-                    type="button"
-                    disabled={result !== "" ? false : true}
-                    icon={true}
-                    title="Enviar"
-                  />
-                </Link>
               </div>
             )}
-            {currentStep == 1 &&
-              <span className='text-primary'>
-                * Enviar para o WhatsApp
-              </span>
-            }
           </div>
         </form>
       </div>

@@ -69,7 +69,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 15px;
   background-color: #fff;
   border-radius: 50%;
-  border: 2px solid #3E8FD1;
+  border: 2px solid #474747;
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -77,20 +77,20 @@ input[type="range"]::-moz-range-thumb {
   width: 15px;
   background-color: #fff;
   border-radius: 50%;
-  border: 1px solid #3E8FD1;
+  border: 1px solid #474747;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   /*  ...  */
   /*  slider progress trick  */
-  box-shadow: -407px 0 0 400px #3E8FD1;
+  box-shadow: -407px 0 0 400px #474747;
 }
 
 /* Thumb: Firefox */
 input[type="range"]::-moz-range-thumb {
   /*  ...  */
   /*  slider progress trick  */
-  box-shadow: -407px 0 0 400px #3E8FD1;
+  box-shadow: -407px 0 0 400px #474747;
 }
 
 input[type="range"] {
@@ -99,4 +99,19 @@ input[type="range"] {
   overflow: hidden;
   border-radius: 16px;
   border: none;
+}
+
+input[type="date"] {}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
 }

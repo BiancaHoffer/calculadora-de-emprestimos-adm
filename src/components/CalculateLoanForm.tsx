@@ -1,55 +1,98 @@
-import { Button } from "./Button";
+import { Dispatch, SetStateAction } from "react";
+import { Modal } from "./Modal";
 import { Select } from "./Select";
 
 interface CalculateLoanProps {
-  selected: any;
-  setSelected: any;
+  selectedPayment: any;
+  setSelectedPayment: any;
+  selectedPercentage: any;
+  setSelectedPercentage: any;
   listPaymentMthods: any;
-  result: string;
-  handleCalculateLoan: () => void;
+  listPercentage: any;
+  selectedDate: any;
+  handleDateChange?: any
+  resultOption1: string[];
+  resultOption2: string;
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  copyCheck: boolean;
+  setCopyCheck: Dispatch<SetStateAction<boolean>>;
+  copyCheck2: boolean;
+  setCopyCheck2: Dispatch<SetStateAction<boolean>>;
+  copyResult: (option: number) => void;
 }
 
 export function CalculateLoan({
-  selected,
-  setSelected,
+  selectedPayment,
+  setSelectedPayment,
+  selectedPercentage,
+  setSelectedPercentage,
+  selectedDate,
+  handleDateChange,
   listPaymentMthods,
-  result,
-  handleCalculateLoan
+  listPercentage,
+  resultOption1,
+  resultOption2,
+  isOpen,
+  setIsOpen,
+  copyCheck,
+  setCopyCheck,
+  copyCheck2,
+  setCopyCheck2,
+  copyResult,
 }: CalculateLoanProps) {
+  const currentDate = new Date().toISOString().split('T')[0];
 
   return (
-    <div
-      data-aos="zoom-in"
-      className=" w-full h-full"
-    >
-      <div className="flex flex-col gap-1 w-full mb-2">
-        <label className="text-zinc-400 text-[12px]">
-          * Escolha uma forma de pagamento para continuar
-        </label>
-        <Select
-          selected={selected}
-          setSelected={setSelected}
-          paymentMethods={listPaymentMthods}
-        />
+    <>
+      <div
+        data-aos="zoom-in"
+        className=" w-full h-full my-4"
+      >
+        <fieldset className="disabled:opacity-20 flex flex-col gap-1 w-full mb-6">
+          <label className="text-zinc-400 text-[12px]">
+            * Selecione a data de início para o pagamento do empréstimo
+          </label>
+          <input
+            type="date"
+            disabled={false}
+            value={selectedDate}
+            onChange={handleDateChange}
+            min={currentDate}
+            className="w-full cursor-pointer rounded-lg bg-zinc-50 p-3 text-left shadow-md focus:outline-none border-[0px] border-transparent active:shadow-xl focus:shadow-xl focus-visible:border-transparent focus-visible:ring-white  sm:text-sm"
+          />
+        </fieldset >
+        <fieldset className="flex flex-col gap-1 w-full mb-6">
+          <label className="text-zinc-400 text-[12px]">
+            * Selecione a porcentagem de juros
+          </label>
+          <Select
+            selected={selectedPercentage}
+            setSelected={setSelectedPercentage}
+            paymentMethods={listPercentage}
+          />
+        </fieldset>
+        <fieldset className="flex flex-col gap-1 w-full mb-2">
+          <label className="text-zinc-400 text-[12px]">
+            * Selecione uma forma de pagamento
+          </label>
+          <Select
+            selected={selectedPayment}
+            setSelected={setSelectedPayment}
+            paymentMethods={listPaymentMthods}
+          />
+        </fieldset>
       </div>
-      {selected.name == "Selecionar forma de pagamento"
-        ? <></>
-        : <Button
-          data-aos="zoom-in"
-          title="Calcular"
-          type="button"
-          disabled={selected.name == "Selecionar forma de pagamento" ? true : false}
-          onClick={handleCalculateLoan}
-        />
-      }
-      {result &&
-        <div
-          data-aos="zoom-in"
-          className="shadow-inner p-4 w-full mt-3 rounded-lg"
-        >
-          {result}
-        </div>
-      }
-    </div>
+      <Modal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        result1={resultOption1}
+        result2={resultOption2}
+        copyCheck={copyCheck}
+        copyCheck2={copyCheck2}
+        setCopyCheck2={setCopyCheck2}
+        copyResult={copyResult}
+      />
+    </>
   )
 }

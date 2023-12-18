@@ -1,11 +1,15 @@
-import { Fragment } from 'react';
+import { Dispatch, Fragment, SetStateAction } from 'react';
+
 import { Listbox, Transition } from '@headlessui/react';
+
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 interface SelectProps {
-  selected: any;
-  setSelected: any;
-  paymentMethods: any;
+  selected: boolean;
+  setSelected: Dispatch<SetStateAction<boolean>>;
+  paymentMethods: {
+    name: string;
+  }[];
 }
 
 export function Select({
@@ -15,8 +19,8 @@ export function Select({
 }: SelectProps) {
   return (
     <Listbox value={selected} onChange={setSelected}>
-      <div className="relative mt-1">
-        <Listbox.Button className="relative z-50 cursor-pointer w-full rounded-lg bg-zinc-50 p-3 text-left shadow-md focus:outline-none border-[1px] border-transparent focus:shadow-lg focus:border-primary active:border-primary focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-primary sm:text-sm">
+      <div className="relative mt-1 ">
+        <Listbox.Button className="relative cursor-pointer w-full border-[2px] border-transparent rounded-lg bg-zinc-50 p-3 text-left shadow-md focus:outline-none active:shadow-xl focus:shadow-xl focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-1 focus-visible:ring-offset-black sm:text-sm">
           <span className="block truncate">{selected.name}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
@@ -31,12 +35,12 @@ export function Select({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full opacity-100 overflow-auto rounded-md bg-zinc-50 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-[170px] w-full opacity-100 overflow-auto rounded-md bg-zinc-50 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm ">
             {paymentMethods.map((method: any, index: any) => (
               <Listbox.Option
                 key={index}
                 className={({ active }) =>
-                  `relative cursor-pointer z-50 select-none py-2 pl-10 pr-4 ${active ? 'bg-[#5ea9e637] text-primary' : 'text-gray-900'
+                  `relative cursor-pointer select-none py-2 pl-10 pr-4 ${active ? 'bg- text-primary' : 'text-gray-900'
                   }`
                 }
                 value={method}
@@ -50,7 +54,7 @@ export function Select({
                       {method.name}
                     </span>
                     {selected ? (
-                      <span className="absolute z-50 inset-y-0 left-0 flex items-center pl-3 text-primary">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary">
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : null}
