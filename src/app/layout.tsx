@@ -10,7 +10,10 @@ import 'react-toastify/dist/ReactToastify.css';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Calculadora de empréstimos',
+  title: 'Calculadora de empréstimos administrador',
+  icons: {
+    icon: "favicon.png",
+  },
 }
 
 export default function RootLayout({
