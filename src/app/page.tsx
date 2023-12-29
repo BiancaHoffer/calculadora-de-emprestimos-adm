@@ -73,9 +73,8 @@ export default function Home() {
     let currentWeek = -1;
 
     for (let i = 0; i < quantityInstallment; i++) {
-      if (i !== 0) {
-        date = addDays(date, 1);
-      };
+      date = addDays(date, 1);
+
 
       while (date.getDay() === 0) {
         // Se for sábado (6) ou domingo (0), adicione um dia até encontrar um dia útil
@@ -106,9 +105,7 @@ export default function Home() {
     let currentWeek = -1;
 
     for (let i = 0; i < quantityInstallment; i++) {
-      if (i !== 0) {
-        date = addDays(date, 1);
-      };
+      date = addDays(date, 1);
 
       while (date.getDay() === 6 || date.getDay() === 0) {
         // Se for sábado (6) ou domingo (0), adicione um dia até encontrar um dia útil
@@ -138,7 +135,7 @@ export default function Home() {
     let date = new Date(selectedDate);
 
     for (let i = 0; i < quantityInstallment; i++) {
-      if (i !== 0) {
+      if (i !== 7) {
         date = addDays(date, 7);
       };
 
@@ -161,7 +158,7 @@ export default function Home() {
     let date = new Date(selectedDate);
 
     for (let i = 0; i < quantityInstallment; i++) {
-      if (i !== 0) {
+      if (i !== 15) {
         date = addDays(date, 15);
       };
 
