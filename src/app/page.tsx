@@ -16,6 +16,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { toast } from 'react-toastify';
 
+import { addDays, format } from 'date-fns';
 
 interface UseFormProps {
   steps: JSX.Element[];
@@ -42,13 +43,19 @@ export default function Home() {
 
   const [selectedPayment, setSelectedPayment] = useState(paymentMethods[0]);
   const [selectedPercentage, setSelectedPercentage] = useState(interestPercentage[0]);
-  const [selectedDate, setSelectedDate] = useState("");
 
-  const [resultOption1, setResultOption1] = useState<string[]>([]);
-  const [resultOption2, setResultOption2] = useState("");
+  const [resultFull, setResultFull] = useState<string[]>([]);
+  const [resultSimple, setResultSimple] = useState("");
+  const [forRenew, setForRenew] = useState(0);
 
   const [copyCheck, setCopyCheck] = useState(false);
   const [copyCheck2, setCopyCheck2] = useState(false);
+
+  const [selectedDate, setSelectedDate] = useState("");
+  const [quantityInstallment, setQuantityInstallment] = useState(0);
+  const [interestValue, setInterestValue] = useState(0);
+
+  const [schedule, setSchedule] = useState<any[]>([]);
 
   function currencyBRL(value: number) {
     return value.toLocaleString('pt-BR', {
@@ -58,80 +65,138 @@ export default function Home() {
     });
   }
 
-  function generatePaymentSchedule(
-    total: number,
-    numberOfInstallments: number,
-    startDate: string
-  ) {
-    const paymentSchedule = [];
-    let currentDate = new Date(startDate);
-    let currentWeek = 1;
-    let separatorAdded = false;
+  //logica cronograma
+  //função para 24 parcelas
+  function generateSchedule24() {
+    let scheduleList = [];
+    let date = new Date(selectedDate);
+    let currentWeek = -1;
 
-    for (let i = 1; i <= numberOfInstallments;) {
-      const dayOfWeek = currentDate.getDay();
-      let currentWeekStartDate = new Date(startDate);
-      const formattedDate = currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    for (let i = 0; i < quantityInstallment; i++) {
+      if (i !== 0) {
+        date = addDays(date, 1);
+      };
 
-      if (selectedPayment.name == "Diário 24x (Segunda a Sábado)" || selectedPayment.name == "Diário 20x (Segunda a Sexta)") {
-        if (!separatorAdded) {
-          paymentSchedule.push(`---- Semana ${currentWeek} ----`);
-          separatorAdded = true;
-        }
+      while (date.getDay() === 0) {
+        // Se for sábado (6) ou domingo (0), adicione um dia até encontrar um dia útil
+        date = addDays(date, 1);
+      };
+
+      const week = getWeekNumber(date); // Função para obter o número da semana
+
+      if (week !== currentWeek) {
+        // Se for uma nova semana, adicione a linha de separação
+        scheduleList.push('________________');
+        currentWeek = week; // Atualize o número da semana
       }
 
-      if (selectedPayment.name === "Semanal 4x") {
-        if (dayOfWeek === 1 || dayOfWeek === 0) {
-          paymentSchedule.push(`---- Semana ${currentWeek} ----`);
-          currentWeekStartDate.setDate(currentWeekStartDate.getDate() + 7);
-          currentWeek++;
-        }
-      }
-
-      if (selectedPayment.name !== "Diário 24x (Segunda a Sábado)") {
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          paymentSchedule.push(`📆 ${formattedDate} 💰${currencyBRL(total)}`);
-          i++;
-        }
-      }
-
-      if (selectedPayment.name === "Diário 24x (Segunda a Sábado)") {
-        if (dayOfWeek !== 0) {
-          paymentSchedule.push(`📆 ${formattedDate} 💰${currencyBRL(total)}`);
-          i++;
-        }
-      }
-
-      if (numberOfInstallments === 24 || numberOfInstallments === 20) {
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
-      if (numberOfInstallments === 4) {
-        currentDate.setDate(currentDate.getDate() + 7);
-      }
-
-      if (numberOfInstallments === 2) {
-        currentDate.setDate(currentDate.getDate() + 15);
-      }
-
-      if (numberOfInstallments === 1) {
-        let selectedDate = new Date(currentDate);
-
-        selectedDate.setMonth(selectedDate.getMonth() + 1);
-
-        let novoMes = selectedDate.getMonth() + 1;
-        let dataFormatada = novoMes < 10 ? `${selectedDate.getDate()}/0${novoMes}` : `${selectedDate.getDate()}/${novoMes}`;
-        paymentSchedule[0] = (`📆 ${dataFormatada} 💰${currencyBRL(total)}`);
-      }
-
-      if (dayOfWeek === 0 && separatorAdded) {
-        currentWeek++;
-        separatorAdded = false;
-      }
+      scheduleList.push({
+        initialDate: format(date, 'dd/MM'),
+        interestValue: currencyBRL(interestValue)
+      })
     }
-    setResultOption1(paymentSchedule);
 
+    setSchedule(scheduleList);
+  };
+
+  //função para 20 parcelas
+  function generateSchedule20() {
+    let scheduleList = [];
+    let date = new Date(selectedDate);
+    let currentWeek = -1;
+
+    for (let i = 0; i < quantityInstallment; i++) {
+      if (i !== 0) {
+        date = addDays(date, 1);
+      };
+
+      while (date.getDay() === 6 || date.getDay() === 0) {
+        // Se for sábado (6) ou domingo (0), adicione um dia até encontrar um dia útil
+        date = addDays(date, 1);
+      };
+
+      const week = getWeekNumber(date); // Função para obter o número da semana
+
+      if (week !== currentWeek) {
+        // Se for uma nova semana, adicione a linha de separação
+        scheduleList.push('________________');
+        currentWeek = week; // Atualize o número da semana
+      }
+
+      scheduleList.push({
+        initialDate: format(date, 'dd/MM'),
+        interestValue: currencyBRL(interestValue)
+      })
+    }
+
+    setSchedule(scheduleList);
+  };
+
+  //função semanal 4 parcelas
+  function generateSchedule4() {
+    let scheduleList = [];
+    let date = new Date(selectedDate);
+
+    for (let i = 0; i < quantityInstallment; i++) {
+      if (i !== 0) {
+        date = addDays(date, 7);
+      };
+
+      while (date.getDay() === 6 || date.getDay() === 0) {
+        // Se for sábado (6) ou domingo (0), adicione um dia até encontrar um dia útil
+        date = addDays(date, 1);
+      };
+
+      scheduleList.push({
+        initialDate: format(date, 'dd/MM'),
+        interestValue: currencyBRL(interestValue)
+      })
+    }
+
+    setSchedule(scheduleList);
+  };
+
+  function generateSchedule2() {
+    let scheduleList = [];
+    let date = new Date(selectedDate);
+
+    for (let i = 0; i < quantityInstallment; i++) {
+      if (i !== 0) {
+        date = addDays(date, 15);
+      };
+
+      scheduleList.push({
+        initialDate: format(date, 'dd/MM'),
+        interestValue: currencyBRL(interestValue)
+      })
+    }
+
+    setSchedule(scheduleList);
+  };
+
+  function generateSchedule1() {
+    let scheduleList = [];
+    let date = new Date(selectedDate);
+
+    for (let i = 0; i < quantityInstallment; i++) {
+      date.setMonth(date.getMonth() + 1);
+
+      scheduleList.push({
+        initialDate: format(date, 'dd/MM'),
+        interestValue: `${currencyBRL(interestValue)}`
+      })
+    }
+
+    setSchedule(scheduleList);
+  };
+
+  function getWeekNumber(date: any) {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    //@ts-ignore
+    const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   }
+  // logica cronograma
 
   function handleCalculateLoan() {
     let total = parseFloat(value);
@@ -140,36 +205,49 @@ export default function Home() {
       case 'Diário 24x (Segunda a Sábado)':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 24;
-        generatePaymentSchedule(total, 24, selectedDate)
-        setResultOption2(`Diário 24x de ${currencyBRL(total)} (Pagamento de segunda a sábado)`);
+        setQuantityInstallment(24);
+        setInterestValue(total);
+        generateSchedule24();
+        setResultSimple(`Diário 24x de ${currencyBRL(total)} (Pagamento de segunda a sábado)`);
         break;
       case 'Diário 20x (Segunda a Sexta)':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 20;
-        generatePaymentSchedule(total, 20, selectedDate)
-        setResultOption2(`Diário 20x de ${currencyBRL(total)} (Pagamento de segunda a sexta)`);
+        setQuantityInstallment(20);
+        setInterestValue(total);
+        generateSchedule20();
+        setResultSimple(`Diário 20x de ${currencyBRL(total)} (Pagamento de segunda a sexta)`);
         break;
       case 'Semanal 4x':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 4;
-        generatePaymentSchedule(total, 4, selectedDate)
-        setResultOption2(`Semanal 4x de ${currencyBRL(total)}`);
+        setQuantityInstallment(4);
+        setInterestValue(total);
+        generateSchedule4();
+        setResultSimple(`Semanal 4x de ${currencyBRL(total)}`);
         break;
       case 'Quinzenal 2x':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 2;
-        generatePaymentSchedule(total, 2, selectedDate)
-        setResultOption2(`Quinzenal 2x de ${currencyBRL(total)}`);
+        setQuantityInstallment(2);
+        setInterestValue(total);
+        generateSchedule2();
+        setResultSimple(`Quinzenal 2x de ${currencyBRL(total)}`);
         break;
       case 'Mensal 1x':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 1;
-        generatePaymentSchedule(total, 1, selectedDate)
-        setResultOption2(`Mensal 1x de ${currencyBRL(total)}`);
+
+        //@ts-ignore
+        setForRenew(total - value)
+        setQuantityInstallment(1);
+        setInterestValue(total);
+        generateSchedule1();
+        setResultSimple(`Mensal 1x de ${currencyBRL(total)}`);
         break;
       default:
-        setResultOption1([]);
-        setResultOption2("");
+        setResultFull([]);
+        setResultSimple("");
         break;
     }
   };
@@ -182,59 +260,7 @@ export default function Home() {
   // input date
   function handleDateChange(event: any) {
     setSelectedDate(event.target.value);
-
-    /*if (selectedPayment.name === "Diário 24x (Segunda a Sábado)") {
-      if (selected.getDay() === 0) {
-        alert(`Não é possível selecionar os domingos nesta forma de pagamento: ${selectedPayment.name}`)
-        setSelectedDate("");
-      } else {
-        setSelectedDate(event.target.value);
-      }
-    }
-    if (selectedPayment.name !== "Diário 24x (Segunda a Sábado)") {
-      if (selected.getDay() === 0 || selected.getDay() === 6) {
-        alert(`Não é possível selecionar finais de semana nesta forma de pagamento: ${selectedPayment.name}`)
-        setSelectedDate("");
-      } else {
-        setSelectedDate(event.target.value);
-      }
-    }*/
   };
-
-  // copy cronograma
-  function copyResult(option: number) {
-    if (option === 1) {
-      const resultsText = resultOption1.join('\n');
-      const textarea = document.createElement('textarea');
-      textarea.value = resultsText;
-
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-
-      setCopyCheck(true);
-      setCopyCheck2(false);
-
-      toast.success("Cronograma completo copiado com sucesso!");
-    }
-
-    if (option === 2) {
-      const resultsText = resultOption2;
-      const textarea = document.createElement('textarea');
-      textarea.value = resultsText;
-
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-
-      setCopyCheck2(true);
-      setCopyCheck(false);
-
-      toast.success("Cronograma resumido copiado com sucesso!");
-    }
-  }
 
   // form step
   function handleSubmit(event: FormEvent) {
@@ -252,19 +278,22 @@ export default function Home() {
       setSelectedPayment={setSelectedPayment}
       selectedPercentage={selectedPercentage}
       setSelectedPercentage={setSelectedPercentage}
-      selectedDate={selectedDate}
+
       listPaymentMthods={paymentMethods}
       listPercentage={interestPercentage}
       handleDateChange={handleDateChange}
-      resultOption1={resultOption1}
-      resultOption2={resultOption2}
+      resultFull={resultFull}
+      resultSimple={resultSimple}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      copyCheck={copyCheck}
-      setCopyCheck={setCopyCheck}
-      copyCheck2={copyCheck2}
-      setCopyCheck2={setCopyCheck2}
-      copyResult={copyResult}
+
+      selectedDate={selectedDate}
+      interestValue={interestValue}
+      quantityInstallment={quantityInstallment}
+
+      schedule={schedule}
+      selectedPaymentName={selectedPayment.name}
+      valueForReview={forRenew}
     />,
   ];
 
@@ -287,11 +316,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    setResultOption1([]);
-    setResultOption2("");
+    setResultFull([]);
     setCopyCheck(false);
     setCopyCheck2(false);
-
+    handleCalculateLoan()
   }, [
     value,
     selectedPayment,
@@ -325,7 +353,7 @@ export default function Home() {
           onSubmit={handleSubmit}
           className='flex justify-between items-center flex-col gap-6 w-full h-full'
         >
-          <div></div>
+          <div />
           <div className='w-full max-w-[320px]'>{currentComponent}</div>
           <div className='w-full flex items-center justify-center flex-col gap-2'>
             {isSecondStep || isLastStep && (
@@ -340,20 +368,22 @@ export default function Home() {
               <Button type="submit" title="Continuar" />
             )}
             {isSecondStep && (
-              <div className='flex flex-col w-full max-w-[320px] gap-2'>
+              <div className='flex flex-col w-full max-w-[320px] gap-3'>
+
                 <div className="flex flex-col gap-1 items-center">
-                  <Button
-                    title="Gerar cronograma de pagamentos"
-                    type="button"
-                    disabled={selectedPayment.name == "Selecionar forma de pagamento"
-                      || selectedPercentage.name == "Selecionar porcentagem"
-                      || selectedDate == ""
-                      ? true : false}
-                    onClick={gerenateListPayments}
-                  />
                   <label className="text-zinc-400 text-[12px]">
                     * Conferir cronograma de pagamentos do empréstimo
                   </label>
+                  {
+                    <Button
+                      title="Gerar cronograma de pagamentos"
+                      type="button"
+                      disabled={selectedPayment.name == "Selecionar forma de pagamento"
+                        || selectedPercentage.name == "Selecionar porcentagem"
+                        || selectedDate == ""
+                        ? true : false}
+                      onClick={gerenateListPayments}
+                    />}
                 </div>
                 <Button
                   type="button"

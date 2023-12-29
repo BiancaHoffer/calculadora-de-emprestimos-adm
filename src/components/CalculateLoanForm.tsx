@@ -1,12 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Modal } from "./Modal";
 import { Select } from "./Select";
-
-import DatePicker from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
-
-import { useState } from 'react';
 import { Calender } from "./Calender";
 
 interface CalculateLoanProps {
@@ -16,17 +10,20 @@ interface CalculateLoanProps {
   setSelectedPercentage: any;
   listPaymentMthods: any;
   listPercentage: any;
-  selectedDate: any;
   handleDateChange?: any
-  resultOption1: string[];
-  resultOption2: string;
+  resultFull: string[];
+  resultSimple: string;
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  copyCheck: boolean;
-  setCopyCheck: Dispatch<SetStateAction<boolean>>;
-  copyCheck2: boolean;
-  setCopyCheck2: Dispatch<SetStateAction<boolean>>;
-  copyResult: (option: number) => void;
+
+  selectedDate: string;
+  interestValue: number;
+  quantityInstallment: number;
+
+  schedule: any;
+
+  selectedPaymentName: string;
+  valueForReview: number;
 }
 
 export function CalculateLoan({
@@ -34,22 +31,25 @@ export function CalculateLoan({
   setSelectedPayment,
   selectedPercentage,
   setSelectedPercentage,
-  selectedDate,
   handleDateChange,
   listPaymentMthods,
   listPercentage,
-  resultOption1,
-  resultOption2,
+
+  resultFull,
+  resultSimple,
+
   isOpen,
   setIsOpen,
-  copyCheck,
-  setCopyCheck,
-  copyCheck2,
-  setCopyCheck2,
-  copyResult,
-}: CalculateLoanProps) {
-  const currentDate = new Date().toISOString().split('T')[0];
 
+  selectedDate,
+  interestValue,
+  quantityInstallment,
+
+  schedule,
+
+  selectedPaymentName,
+  valueForReview
+}: CalculateLoanProps) {
   return (
     <>
       <div
@@ -86,12 +86,18 @@ export function CalculateLoan({
       <Modal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        result1={resultOption1}
-        result2={resultOption2}
-        copyCheck={copyCheck}
-        copyCheck2={copyCheck2}
-        setCopyCheck2={setCopyCheck2}
-        copyResult={copyResult}
+
+        resultFull={resultFull}
+        resultSimple={resultSimple}
+
+        interestValue={interestValue}
+        quantityInstallment={quantityInstallment}
+        selectedDate={selectedDate}
+
+        schedule={schedule}
+
+        selectedPaymentName={selectedPaymentName}
+        valueForReview={valueForReview}
       />
     </>
   )

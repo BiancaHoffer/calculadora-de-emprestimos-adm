@@ -34,10 +34,8 @@ button {
 }
 
 input[type="range"] {
-  /* removing default appearance */
   -webkit-appearance: none;
   appearance: none;
-  /* creating a custom design */
   width: 100%;
   cursor: pointer;
   outline: none;
@@ -53,7 +51,6 @@ input[type="range"]::-webkit-slider-runnable-track {
   border-radius: 16px;
 }
 
-/* Track: Mozilla Firefox */
 input[type="range"]::-moz-range-track {
   height: 15px;
   background: #ccc;
@@ -61,10 +58,8 @@ input[type="range"]::-moz-range-track {
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  /* removing default appearance */
   -webkit-appearance: none;
   appearance: none;
-  /* creating a custom design */
   height: 15px;
   width: 15px;
   background-color: #fff;
@@ -81,27 +76,18 @@ input[type="range"]::-moz-range-thumb {
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  /*  ...  */
-  /*  slider progress trick  */
   box-shadow: -407px 0 0 400px #474747;
 }
 
-/* Thumb: Firefox */
 input[type="range"]::-moz-range-thumb {
-  /*  ...  */
-  /*  slider progress trick  */
   box-shadow: -407px 0 0 400px #474747;
 }
 
 input[type="range"] {
-  /*  ...  */
-  /*  slider progress trick  */
   overflow: hidden;
   border-radius: 16px;
   border: none;
 }
-
-input[type="date"] {}
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   background: transparent;
