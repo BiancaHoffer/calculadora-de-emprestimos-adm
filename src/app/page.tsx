@@ -230,11 +230,10 @@ export default function Home() {
   function handleCalculateLoan() {
     let total = parseFloat(value);
 
-
     switch (selectedPayment.name) {
       case 'Diário 26x (Segunda a Sábado)':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
-        total /= 24;
+        total /= 26;
         setQuantityInstallment(26);
         setInterestValue(total);
         generateSchedule26();
