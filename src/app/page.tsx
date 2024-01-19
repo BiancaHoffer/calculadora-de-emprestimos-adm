@@ -14,7 +14,6 @@ import { useForm } from '@/hooks/useForm';
 //AOS 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { toast } from 'react-toastify';
 
 import { addDays, format } from 'date-fns';
 
@@ -24,6 +23,7 @@ interface UseFormProps {
 
 const paymentMethods = [
   { name: 'Selecionar forma de pagamento' },
+  { name: 'Diário 26x (Segunda a Sábado)' },
   { name: 'Diário 24x (Segunda a Sábado)' },
   { name: 'Diário 20x (Segunda a Sexta)' },
   { name: 'Semanal 4x' },
@@ -66,6 +66,38 @@ export default function Home() {
   }
 
   //logica cronograma
+  //função para 26 parcelas
+  function generateSchedule26() {
+    let scheduleList = [];
+    let date = new Date(selectedDate);
+    let currentWeek = -1;
+
+    for (let i = 0; i < quantityInstallment; i++) {
+      date = addDays(date, 1);
+
+
+      while (date.getDay() === 0) {
+        // Se for sábado (6) ou domingo (0), adicione um dia até encontrar um dia útil
+        date = addDays(date, 1);
+      };
+
+      const week = getWeekNumber(date); // Função para obter o número da semana
+
+      if (week !== currentWeek) {
+        // Se for uma nova semana, adicione a linha de separação
+        scheduleList.push('________________');
+        currentWeek = week; // Atualize o número da semana
+      }
+
+      scheduleList.push({
+        initialDate: format(date, 'dd/MM'),
+        interestValue: currencyBRL(interestValue)
+      })
+    }
+
+    setSchedule(scheduleList);
+  };
+
   //função para 24 parcelas
   function generateSchedule24() {
     let scheduleList = [];
@@ -198,7 +230,16 @@ export default function Home() {
   function handleCalculateLoan() {
     let total = parseFloat(value);
 
+
     switch (selectedPayment.name) {
+      case 'Diário 26x (Segunda a Sábado)':
+        selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
+        total /= 24;
+        setQuantityInstallment(26);
+        setInterestValue(total);
+        generateSchedule26();
+        setResultSimple(`Diário 26x de ${currencyBRL(total)} (Pagamento de segunda a sábado)`);
+        break;
       case 'Diário 24x (Segunda a Sábado)':
         selectedPercentage.name == "20%" ? total *= 1.2 : total *= 1.3
         total /= 24;
